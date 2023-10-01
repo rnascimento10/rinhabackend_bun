@@ -1,6 +1,9 @@
-import { Elysia } from "elysia";
+import AppDependenciesConfigurations from "./ports/Input/appDependenciesConfigurations";
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
+const app = new AppDependenciesConfigurations()
+  .useOpenApiDocs()
+  .addPersonController()
+  .start();
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
