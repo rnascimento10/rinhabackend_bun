@@ -1,8 +1,9 @@
 import { Elysia, t } from "elysia";
-import PersonRepository from "../output/db/adapters/Repositories/postgres/PesonRepository";
+
 import CreatePerson from "../../core/useCases/Person/createPerson";
 import { swagger } from '@elysiajs/swagger'
 import GetPerson from "../../core/useCases/Person/getPerson";
+import PersonRepository from "../output/db/adapters/repositories/postgres/personRepository";
 
 export default class AppDependenciesConfigurations {
 
@@ -25,7 +26,8 @@ export default class AppDependenciesConfigurations {
                 }
             }
 
-        }))
+        }));
+
         return this;
     }
 
@@ -60,7 +62,7 @@ export default class AppDependenciesConfigurations {
                         tags: ['Person']
                     }
 
-                }).get(":id", (async ({ params: { id } }) => {
+                }).get(":id", ( async ({ params: { id } }) => {
                     return await getPersonUseCase.Execute(id);
                 }),
                     {
