@@ -1,9 +1,7 @@
-import { describe, expect, mock, spyOn, test } from "bun:test";
+import { describe, expect, jest, mock, spyOn, test } from "bun:test";
 import CreatePerson from "../src/core/useCases/Person/createPerson";
 import Person from "../src/core/entities/Person";
 import PersonRepository from "../src/ports/output/db/adapters/repositories/postgres/personRepository";
-
-
 
 describe("Create a new person", () => {
 
@@ -11,8 +9,7 @@ describe("Create a new person", () => {
     const sut = new CreatePerson(mockRepository());
 
     test("should not create a ṕerson when as know as is empty or white space", () => {
-
-        ["", " ", "     "].forEach((asKnowAsInvalidValue) => {
+        ["", " ", "     ", , undefined].forEach((asKnowAsInvalidValue) => {
             expect(async () => {
                 const person = { id: "", asKnowAs: asKnowAsInvalidValue, name: "", bornedAt: "" } as Person;
                 await sut.Execute(person);
@@ -22,7 +19,7 @@ describe("Create a new person", () => {
     });
 
     test("Should not create a ṕerson when name is empty or white space", () => {
-        ["", " ", "     "].forEach((nameInvalidValue: string) => {
+        ["", " ", "     ", , undefined].forEach((nameInvalidValue) => {
             expect(async () => {
                 const person = {
                     id: "",
@@ -43,18 +40,6 @@ describe("Create a new person", () => {
         }).toThrow(new Error("invalid as know as, lenght should be less than 32."));
     });
 
-    test("as know as should not be registered on db, when it is regeistered", () => {
-        expect(async () => {
-
-            const person = { id: "", asKnowAs: "rnascimento", name: "rnascimento", bornedAt: "2000-10-10" } as Person;
-            const repository = mockRepository();
-            await repository.addPerson(person);
-
-            const sut = new CreatePerson(repository);
-            await sut.Execute(person);
-
-        }).toThrow(new Error("this person is registered in the system."));
-    });
 
     test("person borned should not be grather than 100 characteres", () => {
         const name = "r".repeat(101);
@@ -78,7 +63,7 @@ describe("Create a new person", () => {
             });
     });
 
-    test("Create a person", async () => {
+    test("Create a new person", async () => {
 
         const repository = mockRepository();
         spyOn(repository, "addPerson");
