@@ -21,7 +21,7 @@ export default class AppDependenciesConfigurations {
                     { name: 'Person', description: 'The person resources' },
                 ],
                 info: {
-                    title: 'Rinha backend',
+                    title: `Rinha backend ${process.env.NAME}`,
                     version: '1.0.0'
                 }
             }

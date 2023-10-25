@@ -1,5 +1,61 @@
+version: '3.5'
+
+networks:
+  lb:
+    driver: bridge
+
 services:
-  rinha-web-api:
+  rinha-api-1: &api # API - Instância 01
     build: .
-    ports: 
-      - "3000:3000"
+    environment:
+      - NAME=I1
+    depends_on:
+      - rinha-db
+    networks:
+      - lb
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '0.5GB'
+
+  rinha-api-2: # API - Instância 02
+    <<: *api
+    environment:
+      - NAME=I2
+    
+
+  nginx: # Load Balancer
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - rinha-api-1
+      - rinha-api-2
+    ports:
+      - "9999:9999"
+    networks:
+      - lb
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '0.5GB'
+
+  rinha-db: # Banco de dados
+   image: postgres:latest
+   hostname: rinha-db
+   environment:
+      POSTGRES_PASSWORD: R1nh@
+      POSTGRES_USER: rinha
+      POSTGRES_DB: rinha
+   restart: unless-stopped
+   healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rinha -d rinha"]
+      interval: 5s
+      timeout: 5s
+   deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: '1.5GB'
